@@ -24,6 +24,7 @@ interface Todo {
 
 const Home: NextPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
+  const [selectedTodos, setSelectedTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState<string>("");
 
   const components = {
@@ -33,10 +34,10 @@ const Home: NextPage = () => {
           <MTableToolbar {...props} />
         </Box>
         <Box className={styles.icons}>
-          <IconButton>
+          <IconButton disabled={!selectedTodos.length}>
             <Edit />
           </IconButton>
-          <IconButton onClick={deleteTodo}>
+          <IconButton disabled={!selectedTodos.length} onClick={deleteTodo}>
             <Delete />
           </IconButton>
         </Box>
@@ -61,9 +62,15 @@ const Home: NextPage = () => {
     }
   };
 
-  const deleteTodo = () => {
-    console.log("delete todo")
-  }
+  const deleteTodo = (event: any) => {
+    const ids = selectedTodos.map(todo => todo.id)
+    let newTodos = todos.filter(todo => {
+      if (!ids.includes(todo.id)) {
+        return true;
+      }
+    })
+    setTodos(newTodos)
+  };
 
   const onInputChange = (event: any) => {
     console.log("value::", event.target.value);
@@ -144,6 +151,12 @@ const Home: NextPage = () => {
         data={todos}
         title="Todos"
         components={components}
+        options={{
+          selection: true,
+        }}
+        onSelectionChange={(rows: Todo[]) => {
+          setSelectedTodos([...rows])
+        }}
       />
     </div>
   );
