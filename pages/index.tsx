@@ -19,7 +19,7 @@ import styles from "../styles/Home.module.css";
 
 interface Todo {
   id: number;
-  title: string;
+  title: string; 
 }
 
 const Home: NextPage = () => {
@@ -34,9 +34,12 @@ const Home: NextPage = () => {
       console.log(id)
       let newTodo: Todo = {
         id,
-        title: event.target.value
+        title: input
       }
-      todos.push(newTodo)
+      let copyArr: Todo[] = JSON.parse(JSON.stringify(todos));
+      copyArr.push(newTodo)
+      setTodos(copyArr)
+      setInput("")
     }
   }
 
@@ -49,7 +52,7 @@ const Home: NextPage = () => {
     <div className={styles.container}>
       <form onSubmit={addTodo}>
         <div className={styles.firstRow}>
-          <TextField id="outlined-basic" label="Outlined" variant="outlined" value={input} onChange={onInputChange}/>
+          <TextField autoComplete="off" id="outlined-basic" label="Outlined" variant="outlined" value={input} onChange={onInputChange}/>
           <Button variant="contained" color="primary" type="submit">
             Add
           </Button>
@@ -107,6 +110,7 @@ const Home: NextPage = () => {
         columns={[
           { title: "ID", field: "id" },
           { title: "Title", field: "title" },
+          { title: "Details", field: "details" }
         ]}
         data={todos}
         title="Todos"
