@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, TextField } from "@material-ui/core";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from "@material-ui/core";
 import { Add, ArrowUpward, Delete } from "@material-ui/icons";
 import Check from "@material-ui/icons/Check";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
@@ -14,7 +14,7 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import MaterialTable, { MTableToolbar } from "material-table";
 import type { NextPage } from "next";
-import { forwardRef, useState } from "react";
+import { forwardRef, useRef, useState } from "react";
 import styles from "../styles/Home.module.css";
 
 interface Todo {
@@ -28,6 +28,7 @@ const Home: NextPage = () => {
   const [UpdateTitle, setUpdateTitle] = useState<string>("");
   const [input, setInput] = useState<string>("");
   const [openDialog, setOpenDialog] = useState(false);
+  const tableRef = useRef<any>();
 
   const handleClickOpen = () => {
     setUpdateTitle(selectedTodos[0]?.title)
@@ -45,7 +46,7 @@ const Home: NextPage = () => {
         todo.title = UpdateTitle;
       }
     })
-    // setSelectedTodos([])
+    tableRef.current.onAllSelected(false)
     setOpenDialog(false);
   }
 
@@ -122,6 +123,7 @@ const Home: NextPage = () => {
       </form>
       <br></br>
       <MaterialTable
+        tableRef={tableRef}
         icons={{
           Add: forwardRef((props, ref) => <Add {...props} ref={ref} />),
           Check: forwardRef((props, ref) => (
@@ -172,7 +174,6 @@ const Home: NextPage = () => {
         columns={[
           { title: "ID", field: "id" },
           { title: "Title", field: "title" },
-          { title: "Details", field: "details" },
         ]}
         data={todos}
         title="Todos"
