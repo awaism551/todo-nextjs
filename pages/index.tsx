@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, TextField } from "@material-ui/core";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, IconButton, TextField } from "@material-ui/core";
 import { Add, ArrowUpward, Delete } from "@material-ui/icons";
 import Check from "@material-ui/icons/Check";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
@@ -25,7 +25,33 @@ interface Todo {
 const Home: NextPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [selectedTodos, setSelectedTodos] = useState<Todo[]>([]);
+  const [UpdateTitle, setUpdateTitle] = useState<string>("");
   const [input, setInput] = useState<string>("");
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleClickOpen = () => {
+    setUpdateTitle(selectedTodos[0]?.title)
+    setOpenDialog(true);
+  };
+
+  const handleClose = () => {
+    setOpenDialog(false);
+  };
+
+  const handleUpdateAndClose = () => {
+    let idToupdate: number = selectedTodos[0]?.id;
+    todos.forEach((todo: Todo) => {
+      if (todo.id === idToupdate) {
+        todo.title = UpdateTitle;
+      }
+    })
+    // setSelectedTodos([])
+    setOpenDialog(false);
+  }
+
+  const handleUpdateFieldChange = (event: any) => {
+    setUpdateTitle(event.target.value)
+  }
 
   const components = {
     Toolbar: (props: any) => (
@@ -34,7 +60,7 @@ const Home: NextPage = () => {
           <MTableToolbar {...props} />
         </Box>
         <Box className={styles.icons}>
-          <IconButton disabled={!selectedTodos.length}>
+          <IconButton disabled={selectedTodos.length !== 1} onClick={handleClickOpen}>
             <Edit />
           </IconButton>
           <IconButton disabled={!selectedTodos.length} onClick={deleteTodo}>
@@ -158,6 +184,29 @@ const Home: NextPage = () => {
           setSelectedTodos([...rows])
         }}
       />
+      <Dialog open={openDialog} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Update Todo</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="title"
+            label="Title"
+            type="text"
+            fullWidth
+            value={UpdateTitle}
+            onChange={handleUpdateFieldChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdateAndClose} color="primary" disabled={!UpdateTitle}>
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
