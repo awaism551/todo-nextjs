@@ -1,5 +1,5 @@
-import { Button, TextField } from "@material-ui/core";
-import { Add, ArrowUpward } from "@material-ui/icons";
+import { Box, Button, IconButton, TextField } from "@material-ui/core";
+import { Add, ArrowUpward, Delete } from "@material-ui/icons";
 import Check from "@material-ui/icons/Check";
 import ChevronLeft from "@material-ui/icons/ChevronLeft";
 import ChevronRight from "@material-ui/icons/ChevronRight";
@@ -12,47 +12,76 @@ import Remove from "@material-ui/icons/Remove";
 import SaveAlt from "@material-ui/icons/SaveAlt";
 import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
-import MaterialTable from "material-table";
+import MaterialTable, { MTableToolbar } from "material-table";
 import type { NextPage } from "next";
 import { forwardRef, useState } from "react";
 import styles from "../styles/Home.module.css";
 
 interface Todo {
   id: number;
-  title: string; 
+  title: string;
 }
 
 const Home: NextPage = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [input, setInput] = useState<string>("");
 
+  const components = {
+    Toolbar: (props: any) => (
+      <div className={styles.firstRow}>
+        <Box className={styles.width100}>
+          <MTableToolbar {...props} />
+        </Box>
+        <Box className={styles.icons}>
+          <IconButton>
+            <Edit />
+          </IconButton>
+          <IconButton onClick={deleteTodo}>
+            <Delete />
+          </IconButton>
+        </Box>
+      </div>
+    ),
+  };
+
   const addTodo = (event: any) => {
     event.preventDefault();
-    console.log("add todo::input value", input)
+    console.log("add todo::input value", input);
     if (input) {
       const id = (todos[todos.length - 1]?.id ?? 0) + 1;
-      console.log(id)
+      console.log(id);
       let newTodo: Todo = {
         id,
-        title: input
-      }
+        title: input,
+      };
       let copyArr: Todo[] = JSON.parse(JSON.stringify(todos));
-      copyArr.push(newTodo)
-      setTodos(copyArr)
-      setInput("")
+      copyArr.push(newTodo);
+      setTodos(copyArr);
+      setInput("");
     }
+  };
+
+  const deleteTodo = () => {
+    console.log("delete todo")
   }
 
   const onInputChange = (event: any) => {
-    console.log("value::", event.target.value)
-    setInput(event.target.value)
-  }
+    console.log("value::", event.target.value);
+    setInput(event.target.value);
+  };
 
   return (
     <div className={styles.container}>
       <form onSubmit={addTodo}>
         <div className={styles.firstRow}>
-          <TextField autoComplete="off" id="outlined-basic" label="Outlined" variant="outlined" value={input} onChange={onInputChange}/>
+          <TextField
+            autoComplete="off"
+            id="outlined-basic"
+            label="Outlined"
+            variant="outlined"
+            value={input}
+            onChange={onInputChange}
+          />
           <Button variant="contained" color="primary" type="submit">
             Add
           </Button>
@@ -110,10 +139,11 @@ const Home: NextPage = () => {
         columns={[
           { title: "ID", field: "id" },
           { title: "Title", field: "title" },
-          { title: "Details", field: "details" }
+          { title: "Details", field: "details" },
         ]}
         data={todos}
         title="Todos"
+        components={components}
       />
     </div>
   );

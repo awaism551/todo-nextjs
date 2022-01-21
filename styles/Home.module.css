@@ -9,3 +9,9 @@
   align-items: center;
   justify-content: space-between;
 }
+.width100 {
+  width: 100%;
+}
+.icons {
+  display: flex;
+}
