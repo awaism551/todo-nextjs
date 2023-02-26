@@ -14,11 +14,11 @@ import Search from "@material-ui/icons/Search";
 import ViewColumn from "@material-ui/icons/ViewColumn";
 import MaterialTable, { MTableToolbar } from "material-table";
 import type { NextPage } from "next";
-import { forwardRef, useRef, useState } from "react";
+import { forwardRef, useEffect, useRef, useState } from "react";
 import styles from "../styles/Home.module.css";
 
 interface Todo {
-  id: number;
+  id?: number;
   title: string;
 }
 
@@ -28,7 +28,20 @@ const Home: NextPage = () => {
   const [UpdateTitle, setUpdateTitle] = useState<string>("");
   const [input, setInput] = useState<string>("");
   const [openDialog, setOpenDialog] = useState(false);
+  const [refetch, setRefetch] = useState(false);
   const tableRef = useRef<any>();
+
+  useEffect(() => {
+    fetch('http://localhost:3001/all')
+      .then(response => response.json())
+      .then(data => {
+        setTodos(data)
+      }
+      )
+      .catch(err => console.log(err))
+      .finally(() => setRefetch(false));
+
+  }, [refetch])
 
   const handleClickOpen = () => {
     setUpdateTitle(selectedTodos[0]?.title)
@@ -40,12 +53,17 @@ const Home: NextPage = () => {
   };
 
   const handleUpdateAndClose = () => {
-    let idToupdate: number = selectedTodos[0]?.id;
-    todos.forEach((todo: Todo) => {
-      if (todo.id === idToupdate) {
-        todo.title = UpdateTitle;
-      }
-    })
+    let todoToUpdate: Todo = {
+      id: selectedTodos[0]?.id,
+      title: UpdateTitle
+    }
+    // todos.forEach((todo: Todo) => {
+    //   if (todo.id === idToupdate) {
+    //     todo.title = UpdateTitle;
+    //   }
+    // })
+
+    createOrUpdate(todoToUpdate);
     tableRef.current.onAllSelected(false)
     setOpenDialog(false);
   }
@@ -64,7 +82,7 @@ const Home: NextPage = () => {
           <IconButton disabled={selectedTodos.length !== 1} onClick={handleClickOpen}>
             <Edit />
           </IconButton>
-          <IconButton disabled={!selectedTodos.length} onClick={deleteTodo}>
+          <IconButton disabled={selectedTodos.length !== 1} onClick={deleteTodo}>
             <Delete />
           </IconButton>
         </Box>
@@ -72,31 +90,63 @@ const Home: NextPage = () => {
     ),
   };
 
+  const createOrUpdate = (todo: Todo) => {
+    fetch('http://localhost:3001/creteOrUpdate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(todo)
+    })
+      .then(response => response.json())
+      .then(data => {
+        console.log("🚀 ~ file: index.tsx:106 ~ createOrUpdate ~ data:", data)
+        setRefetch(true);
+      }
+      )
+      .catch(err => console.log(err))
+      .finally(() => setRefetch(false));
+  }
+
+
   const addTodo = (event: any) => {
     event.preventDefault();
     console.log("add todo::input value", input);
     if (input) {
-      const id = (todos[todos.length - 1]?.id ?? 0) + 1;
-      console.log(id);
+      // const id = (todos[todos.length - 1]?.id ?? 0) + 1;
+      // console.log(id);
       let newTodo: Todo = {
-        id,
         title: input,
       };
-      let copyArr: Todo[] = JSON.parse(JSON.stringify(todos));
-      copyArr.push(newTodo);
-      setTodos(copyArr);
+
+      createOrUpdate(newTodo);
+      // let copyArr: Todo[] = JSON.parse(JSON.stringify(todos));
+      // copyArr.push(newTodo);
+      // setTodos(copyArr);
       setInput("");
     }
   };
 
   const deleteTodo = (event: any) => {
-    const ids = selectedTodos.map(todo => todo.id)
-    let newTodos = todos.filter(todo => {
-      if (!ids.includes(todo.id)) {
-        return true;
-      }
+    let idToDelete = selectedTodos[0]?.id;
+    fetch(`http://localhost:3001/${idToDelete}`, {
+      method: 'DELETE',
     })
-    setTodos(newTodos)
+      .then(response => response.json())
+      .then(data => {
+        console.log("🚀 ~ file: index.tsx:106 ~ createOrUpdate ~ data:", data)
+        setRefetch(true);
+      }
+      )
+      .catch(err => console.log(err))
+      .finally(() => setRefetch(false));
+    // const ids = selectedTodos.map(todo => todo.id)
+    // let newTodos = todos.filter(todo => {
+    //   if (!ids.includes(todo.id)) {
+    //     return true;
+    //   }
+    // })
+    // setTodos(newTodos)
   };
 
   const onInputChange = (event: any) => {
