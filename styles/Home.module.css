@@ -15,3 +15,6 @@
 .icons {
   display: flex;
 }
+input.PrivateSwitchBase-input-23 {
+  display: none !important;
+}
