@@ -82,7 +82,7 @@ const Home: NextPage = () => {
           <IconButton disabled={selectedTodos.length !== 1} onClick={handleClickOpen}>
             <Edit />
           </IconButton>
-          <IconButton disabled={selectedTodos.length !== 1} onClick={deleteTodo}>
+          <IconButton disabled={selectedTodos.length < 1} onClick={deleteTodo}>
             <Delete />
           </IconButton>
         </Box>
@@ -128,9 +128,13 @@ const Home: NextPage = () => {
   };
 
   const deleteTodo = (event: any) => {
-    let idToDelete = selectedTodos[0]?.id;
-    fetch(`http://localhost:3001/${idToDelete}`, {
+    let idsToDelete: number[] = selectedTodos.filter(todo => todo.id).map(todo => todo.id as number);
+    fetch(`http://localhost:3001/delete`, {
       method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(idsToDelete)
     })
       .then(response => response.json())
       .then(data => {
