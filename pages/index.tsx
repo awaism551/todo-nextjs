@@ -1,18 +1,18 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from "@material-ui/core";
-import { Add, ArrowUpward, Delete } from "@material-ui/icons";
-import Check from "@material-ui/icons/Check";
-import ChevronLeft from "@material-ui/icons/ChevronLeft";
-import ChevronRight from "@material-ui/icons/ChevronRight";
-import Clear from "@material-ui/icons/Clear";
-import Edit from "@material-ui/icons/Edit";
-import FilterList from "@material-ui/icons/FilterList";
-import FirstPage from "@material-ui/icons/FirstPage";
-import LastPage from "@material-ui/icons/LastPage";
-import Remove from "@material-ui/icons/Remove";
-import SaveAlt from "@material-ui/icons/SaveAlt";
-import Search from "@material-ui/icons/Search";
-import ViewColumn from "@material-ui/icons/ViewColumn";
-import MaterialTable, { MTableToolbar } from "material-table";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, TextField } from "@mui/material";
+import { Add, ArrowUpward, Delete } from "@mui/icons-material";
+import Check from "@mui/icons-material/Check";
+import ChevronLeft from "@mui/icons-material/ChevronLeft";
+import ChevronRight from "@mui/icons-material/ChevronRight";
+import Clear from "@mui/icons-material/Clear";
+import Edit from "@mui/icons-material/Edit";
+import FilterList from "@mui/icons-material/FilterList";
+import FirstPage from "@mui/icons-material/FirstPage";
+import LastPage from "@mui/icons-material/LastPage";
+import Remove from "@mui/icons-material/Remove";
+import SaveAlt from "@mui/icons-material/SaveAlt";
+import Search from "@mui/icons-material/Search";
+import ViewColumn from "@mui/icons-material/ViewColumn";
+import MaterialTable, { MTableToolbar } from '@material-table/core';
 import type { NextPage } from "next";
 import { forwardRef, useEffect, useRef, useState } from "react";
 import styles from "../styles/Home.module.css";
@@ -79,10 +79,13 @@ const Home: NextPage = () => {
           <MTableToolbar {...props} />
         </Box>
         <Box className={styles.icons}>
-          <IconButton disabled={selectedTodos.length !== 1} onClick={handleClickOpen}>
+          <IconButton
+            disabled={selectedTodos.length !== 1}
+            onClick={handleClickOpen}
+            size="large">
             <Edit />
           </IconButton>
-          <IconButton disabled={selectedTodos.length < 1} onClick={deleteTodo}>
+          <IconButton disabled={selectedTodos.length < 1} onClick={deleteTodo} size="large">
             <Delete />
           </IconButton>
         </Box>
@@ -243,6 +246,7 @@ const Home: NextPage = () => {
         <DialogTitle id="form-dialog-title">Update Todo</DialogTitle>
         <DialogContent>
           <TextField
+            variant="standard"
             autoFocus
             margin="dense"
             id="title"
@@ -250,8 +254,7 @@ const Home: NextPage = () => {
             type="text"
             fullWidth
             value={UpdateTitle}
-            onChange={handleUpdateFieldChange}
-          />
+            onChange={handleUpdateFieldChange} />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="primary">
